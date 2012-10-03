@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+   <groupId>492.project</groupId>
+   <artifactId>492.json</artifactId>
+   <version>1.0</version>
+   <url>http://maven.apache.org</url>
+   <packaging>pom</packaging>
+
+
+   <properties>
+      <!--EXTERNAL-->
+      <gson-version>2.2.1</gson-version>
+      <http-client-version>4.2.1</http-client-version>
+      <http-core-version>4.2.1</http-core-version>
+
+      <!--PROJECT PROPERTIES-->
+      <conf-version>1.0</conf-version>
+      <webint-version>1.0</webint-version>
+      <main-version>1.0</main-version>
+
+   </properties>
+
+   <modules>
+      <module>492.json.webint</module>
+      <module>492.json.conf</module>
+      <module>492.json.main</module>
+
+
+   </modules>
+
+   <dependencies>
+
+
+      <!--OUR PROJECT-->
+
+      <!--<dependency>-->
+         <!--<groupId>492.project</groupId>-->
+         <!--<artifactId>492.json.conf</artifactId>-->
+         <!--<scope>compile</scope>-->
+         <!--<version>${conf-version}</version>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+         <!--<groupId>492.project</groupId>-->
+         <!--<artifactId>492.json.webint</artifactId>-->
+         <!--<scope>compile</scope>-->
+         <!--<version>${webint-version}</version>-->
+      <!--</dependency>-->
+      <!--<dependency>-->
+         <!--<groupId>492.project</groupId>-->
+         <!--<artifactId>492.json.main</artifactId>-->
+         <!--<scope>compile</scope>-->
+         <!--<version>${main-version}</version>-->
+      <!--</dependency>-->
+   </dependencies>
+
+    
+</project>
