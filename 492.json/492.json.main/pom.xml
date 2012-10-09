@@ -15,5 +15,19 @@
    <version>1.0</version>
    <packaging>jar</packaging>
 
+   <dependencies>
+      <dependency>
+         <groupId>492.project</groupId>
+         <artifactId>492.json.conf</artifactId>
+         <version>1.0</version>
+      </dependency>
+      <dependency>
+         <groupId>492.project</groupId>
+         <artifactId>492.json.webint</artifactId>
+         <version>1.0</version>
+      </dependency>
+
+   </dependencies>
+
     
 </project>

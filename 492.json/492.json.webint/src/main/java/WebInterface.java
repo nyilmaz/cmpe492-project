@@ -1,3 +1,4 @@
+import oauth.signpost.OAuth;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -8,10 +9,13 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * User: nyilmaz
@@ -20,8 +24,12 @@ import java.util.List;
  */
 public class WebInterface {
 
-   WebInterface(ConfigurationLoader configurationLoader){
+   private static Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
 
+   Properties properties;
+
+   WebInterface(Properties properties){
+      this.properties = properties;
    }
 
 
@@ -32,13 +40,22 @@ public class WebInterface {
 
    public static void main(String[] args) {
       ConfigurationLoader configurationLoader = new ConfigurationLoader();
-      WebInterface webInterface = new WebInterface(configurationLoader);
+      Properties properties = configurationLoader.initialize().getProperties();
+
+      OAuthHeader header = new OAuthHeader(properties);
+
 
       HttpClient httpClient = new DefaultHttpClient();
-      HttpPost httpPost = new HttpPost("https://twitter.com/sessions");
+      HttpPost httpPost = new HttpPost("https://stream.twitter.com/1.1/statuses/filter.json");
       List<NameValuePair> pair = new ArrayList<NameValuePair>();
-      pair.add(new BasicNameValuePair("session[username_or_email]", "px2"));
-      pair.add(new BasicNameValuePair("session[password]", "cxxolwz"));
+
+      try {
+         httpPost.setHeader("Authorization", header.getAuthorizationHeaderString());
+      } catch(Exception e) {
+         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
+
+
       try {
          httpPost.setEntity(new UrlEncodedFormEntity(pair));
          HttpResponse httpResponse = httpClient.execute(httpPost);
@@ -46,11 +63,11 @@ public class WebInterface {
          System.out.println(httpResponse.getStatusLine());
          HttpEntity httpEntity = httpResponse.getEntity();
          ///
-//         BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
-//         String line;
-//         while((line=br.readLine())!=null){
-//            System.out.println(line);
-//         }
+         BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));
+         String line;
+         while((line=br.readLine())!=null){
+            System.out.println(line);
+         }
          ////
          EntityUtils.consume(httpEntity);
 

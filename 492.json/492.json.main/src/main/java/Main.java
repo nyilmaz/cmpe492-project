@@ -4,7 +4,11 @@
  * Time: 4:39 PM
  */
 public class Main {
-   public static void main(String[] args) {
 
+
+   static ConfigurationLoader conf;
+
+   public static void main(String[] args) {
+      conf.initialize();
    }
 }
