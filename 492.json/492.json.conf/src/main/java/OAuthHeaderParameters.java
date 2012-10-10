@@ -7,7 +7,7 @@
 /**
  * There shold be 7 parameters
  */
-public enum HeaderParameters {
+public enum OAuthHeaderParameters {
    oauth_consumer_key,
    oauth_nonce,
    oauth_signature,

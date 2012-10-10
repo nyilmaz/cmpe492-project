@@ -8,14 +8,13 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * User: nyilmaz
@@ -46,21 +45,28 @@ public class WebInterface {
 
 
       HttpClient httpClient = new DefaultHttpClient();
-      HttpPost httpPost = new HttpPost("https://stream.twitter.com/1.1/statuses/filter.json");
+
+      HttpPost httpPost = new HttpPost(properties.getProperty(ProgramConstants.base_url.name()));
+
       List<NameValuePair> pair = new ArrayList<NameValuePair>();
+      BasicNameValuePair[] params = {new BasicNameValuePair("track", "twitter")};
+
+      Set<String> set = new TreeSet<String>();
+      set.add("track");
 
       try {
-         httpPost.setHeader("Authorization", header.getAuthorizationHeaderString());
+         String oauth = header.getAuthorizationHeaderString(set);
+         httpPost.setHeader("Authorization", oauth);
+         UrlEncodedFormEntity urlEncodedFormEntity = new UrlEncodedFormEntity(Arrays.asList(params));
+         httpPost.setEntity(urlEncodedFormEntity);
+
       } catch(Exception e) {
          e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
       }
 
 
       try {
-         httpPost.setEntity(new UrlEncodedFormEntity(pair));
          HttpResponse httpResponse = httpClient.execute(httpPost);
-//         httpResponse.getStatusLine().getStatusCode()
-         System.out.println(httpResponse.getStatusLine());
          HttpEntity httpEntity = httpResponse.getEntity();
          ///
          BufferedReader br = new BufferedReader(new InputStreamReader(httpEntity.getContent()));

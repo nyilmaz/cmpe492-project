@@ -7,7 +7,7 @@ import java.util.Properties;
  */
 public enum OauthConstants {
 
-   oauth_customer_key,
+   oauth_consumer_key,
    oauth_nonce,
    oauth_signature_method,
    oauth_timestamp,

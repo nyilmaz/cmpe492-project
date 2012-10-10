@@ -1,8 +1,5 @@
 import oauth.signpost.OAuth;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +20,9 @@ public class OAuthHeader {
 
    private final Properties properties;
    private SortedMap<String, String> parameterMap;
+   private static final String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
+   private static long timestamp = System.currentTimeMillis()/1000;
+   private static String nonce = createNonce();
 
    OAuthHeader(Properties properties){
 
@@ -30,27 +30,41 @@ public class OAuthHeader {
       parameterMap = new TreeMap<String, String>();
    }
 
-   private String createParameterString(Map<String, String> optionalParams){
+   private static String createNonce(){
+      Random rnd = new Random(System.currentTimeMillis());
+      char[] nonce = new char[32];
+      for(int i = 0; i < nonce.length ; i++){
+         nonce[i] = characters.charAt(rnd.nextInt(characters.length()));
+      }
+      return new String(nonce);
+   }
+
+   private String createParameterString(Set<String> optionalParams){
 
       if(optionalParams == null){
-         optionalParams = Collections.emptyMap();
+         optionalParams = Collections.emptySet();
       }
 
       // put required parameters
       for(OauthConstants constant : OauthConstants.values()){
          String key = OAuth.percentEncode(constant.name());
          String value = OAuth.percentEncode(properties.getProperty(constant.name()));
+         if(constant.equals(OauthConstants.oauth_nonce)){
+            value = OAuth.percentEncode(nonce);
+         }
+         if(constant.equals(OauthConstants.oauth_timestamp)){
+            value = OAuth.percentEncode(String.valueOf(timestamp));
+         }
          parameterMap.put(key, value);
       }
 
       // put optional parameters
-      for(String key_ : optionalParams.keySet()){
+      for(String key_ : optionalParams){
          String key = OAuth.percentEncode(key_);
          String value = OAuth.percentEncode(properties.getProperty(key_));
          parameterMap.put(key, value);
       }
 
-      parameterMap.putAll(optionalParams);
 
       StringBuilder builder = new StringBuilder();
 
@@ -71,8 +85,8 @@ public class OAuthHeader {
    }
 
    private String createSigningKey(){
-      return OAuth.percentEncode(properties.getProperty("consumer_secret"))
-         .concat(OAuth.percentEncode("oauth_token_secret"));
+      return OAuth.percentEncode(properties.getProperty("consumer_secret")).concat("&")
+         .concat(OAuth.percentEncode(properties.getProperty("oauth_token_secret")));
 
    }
 
@@ -94,20 +108,23 @@ public class OAuthHeader {
       return result == null ? null : new String(result);
    }
 
-   public String getAuthorizationHeaderString() throws Exception {
+   public String getAuthorizationHeaderString(Set<String> optionalParams) throws Exception {
       StringBuilder builder = new StringBuilder();
       builder.append("OAuth ");
-      for(HeaderParameters param : HeaderParameters.values()){
+      for(OAuthHeaderParameters param : OAuthHeaderParameters.values()){
          String key = OAuth.percentEncode(param.name());
          String value = OAuth.percentEncode(properties.getProperty(param.name()));
-         if(param.equals(HeaderParameters.oauth_timestamp)){
-            value = OAuth.percentEncode(String.valueOf(System.currentTimeMillis()));
+         if(param.equals(OAuthHeaderParameters.oauth_timestamp)){
+            value = OAuth.percentEncode(String.valueOf(timestamp));
          }
-         if(param.equals(HeaderParameters.oauth_signature)){
+         if(param.equals(OAuthHeaderParameters.oauth_signature)){
             String method = properties.getProperty(ProgramConstants.http_method.name());
             String baseUrl = properties.getProperty(ProgramConstants.base_url.name());
 
-            value = OAuth.percentEncode(calculateSigningKey(createSignatureBaseString(method, baseUrl, createParameterString(null)), createSigningKey()));
+            value = OAuth.percentEncode(calculateSigningKey(createSignatureBaseString(method, baseUrl, createParameterString(optionalParams)), createSigningKey()));
+         }
+         if(param.equals(OAuthHeaderParameters.oauth_nonce)){
+            value = OAuth.percentEncode(nonce);
          }
 
          if(value == null)
@@ -121,12 +138,22 @@ public class OAuthHeader {
 
    public static void main(String[] args) {
 
-//      ConfigurationLoader cl = new ConfigurationLoader();
-//      Properties properties = cl.initialize().getProperties();
-//      OAuthHeader o = new OAuthHeader(properties);
+      ConfigurationLoader cl = new ConfigurationLoader();
+      Properties properties = cl.initialize().getProperties();
+      OAuthHeader o = new OAuthHeader(properties);
+      Set<String> map = new TreeSet<String>();
+      map.add("track");
+
+      try {
+         //System.out.println(o.getAuthorizationHeaderString(map));
+         String p = o.createSignatureBaseString("POST", "https://stream.twitter.com/1.1/statuses/filter.json", o.createParameterString(map));
+         System.out.println(o.getAuthorizationHeaderString(map));
+      } catch(Exception e) {
+
+      }
+      //System.out.println("include_entities=true&oauth_consumer_key=xvz1evFS4wEEPTGEFPHBog&oauth_nonce=kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1318622958&oauth_token=370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb&oauth_version=1.0&status=Hello%20Ladies%20%2B%20Gentlemen%2C%20a%20signed%20OAuth%20request%21");
 //      System.out.println(o.createEncodedUrl("post", properties.getProperty("base_url"), o.createParameterString(null)));
-      byte [] asd = null;
-      System.out.println(new String(asd));
+//      OAuthHeader o = new OAuthHeader()
 
    }
 
