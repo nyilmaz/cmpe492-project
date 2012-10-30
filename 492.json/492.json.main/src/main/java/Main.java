@@ -1,5 +1,3 @@
-
-
 /**
  * User: nyilmaz
  * Date: 10/3/12
@@ -8,9 +6,20 @@
 public class Main {
 
 
-   static ConfigurationLoader conf;
+   private static ConfigurationLoader conf;
 
    public static void main(String[] args) {
-      conf.initialize();
+      conf = new ConfigurationLoader().initialize();
+
+      WebInterface webInterface = WebInterface.getInstance(conf.getProperties(), conf.getOptionalParameters());
+
+      webInterface.connect();
+      //BufferedReader bufferedReader = webInterface.getBufferedReader();
+
+
+
+
+
+
    }
 }

@@ -1,7 +1,6 @@
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Resource;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -16,18 +15,21 @@ public class ConfigurationLoader {
    private static Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
    private static final String confFile = "./492.config";
    private static Properties properties;
-   private static OauthConstants constants;
+   private static Properties optionalParameters;
 
    public Properties getProperties(){
       return properties;
    }
 
    public ConfigurationLoader initialize(){
-      boolean success = false;
+
       properties = new Properties();
+      optionalParameters = new Properties();
 
       try {
          properties.load(new FileInputStream(confFile));
+         optionalParameters.load(new FileInputStream(properties.getProperty("parameters_file")));
+
 
 
       } catch(IOException e) {
@@ -39,5 +41,7 @@ public class ConfigurationLoader {
 
    }
 
-
+   public Properties getOptionalParameters() {
+      return optionalParameters;
+   }
 }

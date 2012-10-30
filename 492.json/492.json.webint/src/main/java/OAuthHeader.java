@@ -1,3 +1,4 @@
+import exception.PropertyNotFoundException;
 import oauth.signpost.OAuth;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
@@ -19,14 +20,16 @@ public class OAuthHeader {
    private static Logger logger = LoggerFactory.getLogger(ConfigurationLoader.class);
 
    private final Properties properties;
+   private final Properties optionalParameters;
    private SortedMap<String, String> parameterMap;
    private static final String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
    private static long timestamp = System.currentTimeMillis()/1000;
    private static String nonce = createNonce();
 
-   OAuthHeader(Properties properties){
+   OAuthHeader(Properties properties, Properties optionalParameters){
 
       this.properties = properties;
+      this.optionalParameters = optionalParameters;
       parameterMap = new TreeMap<String, String>();
    }
 
@@ -39,11 +42,8 @@ public class OAuthHeader {
       return new String(nonce);
    }
 
-   private String createParameterString(Set<String> optionalParams){
+   private String createParameterString(){
 
-      if(optionalParams == null){
-         optionalParams = Collections.emptySet();
-      }
 
       // put required parameters
       for(OauthConstants constant : OauthConstants.values()){
@@ -59,9 +59,9 @@ public class OAuthHeader {
       }
 
       // put optional parameters
-      for(String key_ : optionalParams){
+      for(String key_ : optionalParameters.stringPropertyNames()){
          String key = OAuth.percentEncode(key_);
-         String value = OAuth.percentEncode(properties.getProperty(key_));
+         String value = OAuth.percentEncode(optionalParameters.getProperty(key_));
          parameterMap.put(key, value);
       }
 
@@ -108,12 +108,16 @@ public class OAuthHeader {
       return result == null ? null : new String(result);
    }
 
-   public String getAuthorizationHeaderString(Set<String> optionalParams) throws Exception {
+   public String getAuthorizationHeaderString() throws PropertyNotFoundException {
       StringBuilder builder = new StringBuilder();
       builder.append("OAuth ");
       for(OAuthHeaderParameters param : OAuthHeaderParameters.values()){
          String key = OAuth.percentEncode(param.name());
          String value = OAuth.percentEncode(properties.getProperty(param.name()));
+
+         if(value == null)
+            throw new PropertyNotFoundException("Property \"" + key + "\" not found in config file, did you forget to add?");
+
          if(param.equals(OAuthHeaderParameters.oauth_timestamp)){
             value = OAuth.percentEncode(String.valueOf(timestamp));
          }
@@ -121,14 +125,12 @@ public class OAuthHeader {
             String method = properties.getProperty(ProgramConstants.http_method.name());
             String baseUrl = properties.getProperty(ProgramConstants.base_url.name());
 
-            value = OAuth.percentEncode(calculateSigningKey(createSignatureBaseString(method, baseUrl, createParameterString(optionalParams)), createSigningKey()));
+            value = OAuth.percentEncode(calculateSigningKey(createSignatureBaseString(method, baseUrl, createParameterString()), createSigningKey()));
          }
          if(param.equals(OAuthHeaderParameters.oauth_nonce)){
             value = OAuth.percentEncode(nonce);
          }
 
-         if(value == null)
-            throw new Exception("Property \"" + key + "\" not found in config file, did you forget to add?");
 
          builder.append(key).append("=").append("\"").append(value).append("\"").append(", ");
       }
@@ -136,26 +138,7 @@ public class OAuthHeader {
       return builder.toString();
    }
 
-   public static void main(String[] args) {
 
-      ConfigurationLoader cl = new ConfigurationLoader();
-      Properties properties = cl.initialize().getProperties();
-      OAuthHeader o = new OAuthHeader(properties);
-      Set<String> map = new TreeSet<String>();
-      map.add("track");
-
-      try {
-         //System.out.println(o.getAuthorizationHeaderString(map));
-         String p = o.createSignatureBaseString("POST", "https://stream.twitter.com/1.1/statuses/filter.json", o.createParameterString(map));
-         System.out.println(o.getAuthorizationHeaderString(map));
-      } catch(Exception e) {
-
-      }
-      //System.out.println("include_entities=true&oauth_consumer_key=xvz1evFS4wEEPTGEFPHBog&oauth_nonce=kYjzVBB8Y0ZFabxSWbWovY3uYSQ2pTgmZeNu2VS4cg&oauth_signature_method=HMAC-SHA1&oauth_timestamp=1318622958&oauth_token=370773112-GmHxMAgYyLbNEtIKZeRNFsMKPR9EyMZeS9weJAEb&oauth_version=1.0&status=Hello%20Ladies%20%2B%20Gentlemen%2C%20a%20signed%20OAuth%20request%21");
-//      System.out.println(o.createEncodedUrl("post", properties.getProperty("base_url"), o.createParameterString(null)));
-//      OAuthHeader o = new OAuthHeader()
-
-   }
 
 
 }

@@ -23,6 +23,7 @@
       <conf-version>1.0</conf-version>
       <webint-version>1.0</webint-version>
       <main-version>1.0</main-version>
+      <db-version>1.0</db-version>
 
    </properties>
 
@@ -30,6 +31,7 @@
       <module>492.json.webint</module>
       <module>492.json.conf</module>
       <module>492.json.main</module>
+      <module>492.json.db</module>
 
 
    </modules>
@@ -39,8 +41,8 @@
    <!--LOGGER-->
       <dependency>
          <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
-         <version>1.6.4</version>
+         <artifactId>slf4j-simple</artifactId>
+         <version>1.4.2</version>
       </dependency>
 
    </dependencies>
