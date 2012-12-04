@@ -26,6 +26,17 @@
          <artifactId>492.json.webint</artifactId>
          <version>1.0</version>
       </dependency>
+      <dependency>
+         <groupId>492.project</groupId>
+         <artifactId>492.json.file</artifactId>
+         <version>1.0</version>
+      </dependency>
+
+      <dependency>
+         <groupId>com.baulsupp.kolja</groupId>
+         <artifactId>jcurses</artifactId>
+         <version>0.9.5.3</version>
+      </dependency>
 
    </dependencies>
 

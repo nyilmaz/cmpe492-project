@@ -10,6 +10,32 @@
    <url>http://maven.apache.org</url>
    <packaging>pom</packaging>
 
+   <build>
+      <plugins>
+         <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>2.3</version>
+            <configuration>
+               <archive>
+                  <manifest>492.json.main.Main</manifest>
+               </archive>
+               <descriptorRefs>
+                  <descriptorRef>jar-with-dependencies</descriptorRef>
+               </descriptorRefs>
+            </configuration>
+            <executions>
+               <execution>
+                  <id>make-with-jar-dependencies</id>
+                  <phase>package</phase>
+                  <goals>
+                     <goal>single</goal>
+                  </goals>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
+
 
    <properties>
       <!--EXTERNAL-->
@@ -18,12 +44,17 @@
       <http-core-version>4.2.1</http-core-version>
       <oauth-signpost-version>1.2</oauth-signpost-version>
       <commons-codec-version>1.6</commons-codec-version>
+      <slf4j-version>1.4.2</slf4j-version>
+      <guice-inject-version>3.0</guice-inject-version>
+      <commons-lang-version>2.6</commons-lang-version>
 
       <!--PROJECT PROPERTIES-->
       <conf-version>1.0</conf-version>
       <webint-version>1.0</webint-version>
       <main-version>1.0</main-version>
       <db-version>1.0</db-version>
+      <file-version>1.0</file-version>
+      <objects-version>1.0</objects-version>
 
    </properties>
 
@@ -32,6 +63,8 @@
       <module>492.json.conf</module>
       <module>492.json.main</module>
       <module>492.json.db</module>
+      <module>492.json.file</module>
+      <module>492.json.objects</module>
 
 
    </modules>
@@ -42,7 +75,13 @@
       <dependency>
          <groupId>org.slf4j</groupId>
          <artifactId>slf4j-simple</artifactId>
-         <version>1.4.2</version>
+         <version>${slf4j-version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>commons-lang</groupId>
+         <artifactId>commons-lang</artifactId>
+         <version>${commons-lang-version}</version>
       </dependency>
 
    </dependencies>

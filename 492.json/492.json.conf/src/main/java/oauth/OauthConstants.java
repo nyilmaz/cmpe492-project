@@ -1,3 +1,5 @@
+package oauth;
+
 import java.util.Properties;
 
 /**

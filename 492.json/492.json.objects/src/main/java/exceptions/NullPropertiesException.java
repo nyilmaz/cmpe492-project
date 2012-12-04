@@ -1,14 +1,14 @@
-package exception;
+package exceptions;
 
 /**
  * User: nyilmaz
  * Date: 10/17/12
  * Time: 1:28 AM
  */
-public class NullPropertiesException extends Exception {
+public class NullPropertiesException extends InitializationException {
 
    public NullPropertiesException() {
-      super();
+      super("Properties are null, Please first initialize class...");
    }
 
    public NullPropertiesException(String message) {

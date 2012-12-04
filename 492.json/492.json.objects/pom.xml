@@ -11,18 +11,15 @@
    </parent>
 
    <groupId>492.project</groupId>
-   <artifactId>492.json.conf</artifactId>
-   <version>1.0</version>
+   <artifactId>492.json.objects</artifactId>
+   <version>${objects-version}</version>
    <packaging>jar</packaging>
 
    <dependencies>
-      <dependency>
-         <groupId>492.project</groupId>
-         <artifactId>492.json.objects</artifactId>
-         <version>1.0</version>
-      </dependency>
-   </dependencies>
 
+
+
+   </dependencies>
 
     
 </project>

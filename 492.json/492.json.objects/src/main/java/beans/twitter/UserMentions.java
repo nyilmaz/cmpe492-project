@@ -1,4 +1,4 @@
-package bean;
+package beans.twitter;
 
 /**
  * User: nyilmaz

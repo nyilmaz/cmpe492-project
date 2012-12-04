@@ -1,4 +1,4 @@
-package bean;
+package beans.twitter;
 
 import java.util.Arrays;
 
@@ -11,6 +11,18 @@ public class TwitterCoordinates {
 
    String type;
    float[] coordinates;
+
+
+   public String getType() {
+      return type;
+   }
+
+   public float[] getCoordinates() {
+      return coordinates;
+   }
+   public String getCoordinates2() {
+      return coordinates[0] + "," + coordinates[1] + ",";
+   }
 
    @Override
    public String toString() {

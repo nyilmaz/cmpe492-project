@@ -1,3 +1,5 @@
+package constants;
+
 /**
  * User: nyilmaz
  * Date: 10/10/12

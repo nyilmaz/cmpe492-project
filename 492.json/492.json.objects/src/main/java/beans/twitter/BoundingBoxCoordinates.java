@@ -1,4 +1,4 @@
-package bean;
+package beans.twitter;
 
 import java.util.Arrays;
 
