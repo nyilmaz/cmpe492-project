@@ -86,7 +86,7 @@ public class DataFileOperations {
          "<osm version=\"0.6\" generator=\"CGImap 0.0.2\">\n";
    }
 
-   public static String createNode(TwitterStreamBean tweet){
+   private static String createNode(TwitterStreamBean tweet){
       try {
          Date date = new SimpleDateFormat(TWITTER_TIMESTAMP_FORMAT).parse(tweet.getCreated_at());
          String formattedDate = new SimpleDateFormat(OSM_TIMESTAMP_FORMAT).format(date);
@@ -102,7 +102,7 @@ public class DataFileOperations {
 
    }
 
-   public static String createWay(User user, List<TwitterStreamBean> tweets){
+   private static String createWay(User user, List<TwitterStreamBean> tweets){
       StringBuilder builder = new StringBuilder("<way id=\"" + user.getId() + "\" " +
          "name=\"" + user.getName() + "\" " +
          "visible=\"true\" " +
@@ -115,10 +115,37 @@ public class DataFileOperations {
       return builder.toString();
    }
 
+   public static void createCSV(Map<User, List<TwitterStreamBean>> infoMap, File outfile) throws IOException {
+      if(!outfile.createNewFile()){
+         logger.error("Cannot create csv output file. Create csv failed.");
+         return;
+      }
+      FileOutputStream outputStream = new FileOutputStream(outfile);
+
+      for(User user : infoMap.keySet()){
+         StringBuilder builder = new StringBuilder();
+         builder.append(user.getId()).append(",\"").append(user.getName()).append("\",");
+         for(TwitterStreamBean bean : infoMap.get(user)){
+
+            builder.append(bean.getCoordinates().getCoordinates()[0])
+               .append(",")
+               .append(bean.getCoordinates().getCoordinates()[1])
+               .append(",");
+         }
+         builder.setLength(builder.length() - 1);
+         builder.append("\n");
+         outputStream.write(builder.toString().getBytes());
+         outputStream.flush();
+      }
+      outputStream.close();
+
+
+   }
+
    public static void main(String[] args) throws ParseException {
-      String s = "Wed Oct 10 23:17:26 +0000 2012";
-      SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss '+0000' yyyy");
-      Date date = sdf.parse(s);
-      System.out.println(date);
+      StringBuilder builder = new StringBuilder("1234567");
+      builder.setLength(builder.length()-1);
+      System.out.println(builder.toString());
+
    }
 }

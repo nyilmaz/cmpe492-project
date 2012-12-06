@@ -72,7 +72,8 @@ public class FileReader implements Runnable {
       }
       File outFile = new File(properties.getProperty(FileSupportConstants.osmxml_output_file.name()));
       try {
-         DataFileOperations.createOSMXML(map, outFile);
+//         DataFileOperations.createOSMXML(map, outFile);
+         DataFileOperations.createCSV(map ,outFile);
       } catch(IOException e) {
          e.printStackTrace();
       }
