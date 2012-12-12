@@ -14,7 +14,10 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.Properties;
+import java.util.Random;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 /**
  * User: nyilmaz
@@ -65,9 +68,10 @@ public class OAuthHeader {
       }
 
       // put optional parameters
-      for(String key_ : optionalParameters.stringPropertyNames()){
-         String key = OAuth.percentEncode(key_);
-         String value = OAuth.percentEncode(optionalParameters.getProperty(key_));
+      for(Object key_ : optionalParameters.keySet()){
+         String keyStr = (String) key_;
+         String key = OAuth.percentEncode(keyStr);
+         String value = OAuth.percentEncode((String)optionalParameters.get(keyStr));
          parameterMap.put(key, value);
       }
 
@@ -141,6 +145,22 @@ public class OAuthHeader {
          builder.append(key).append("=").append("\"").append(value).append("\"").append(", ");
       }
       builder.setLength(builder.lastIndexOf(","));
+      return builder.toString();
+   }
+
+
+
+   public static String getOAuthParameter(String header){
+      StringBuilder builder = new StringBuilder();
+
+      header = header.replaceAll("OAuth ", "");
+      for(String prop : header.split(",")){
+         prop = prop.replaceAll("\"", "");
+         prop = prop.trim();
+         builder.append(prop).append("&");
+      }
+
+      builder.setLength(builder.length() - 1);
       return builder.toString();
    }
 

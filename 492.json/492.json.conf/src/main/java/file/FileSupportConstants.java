@@ -11,5 +11,7 @@ public enum FileSupportConstants {
    file_output_name_prefix,
    data_dir,
    data_file_prefix,
-   osmxml_output_file
+   osmxml_output_file,
+   data_file,
+   user_id_file
 }

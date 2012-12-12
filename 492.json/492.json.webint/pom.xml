@@ -26,6 +26,11 @@
          <artifactId>492.json.objects</artifactId>
          <version>1.0</version>
       </dependency>
+      <dependency>
+         <groupId>492.project</groupId>
+         <artifactId>492.json.file</artifactId>
+         <version>1.0</version>
+      </dependency>
 
 
       <!--EXTERNAL DEPENDENCIES-->

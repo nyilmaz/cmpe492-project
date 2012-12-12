@@ -7,6 +7,6 @@ package constants;
  */
 public enum ProgramConstants {
    base_url,
-   http_method
-
+   http_method,
+   tweet_count_per_user
 }

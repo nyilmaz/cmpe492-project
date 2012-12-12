@@ -1,9 +1,11 @@
 package main;
 
 import exceptions.InitializationException;
-import file.FileReader;
 import loader.ConfigurationLoader;
+import web.GetUserTimelineGetter;
 import web.WebInterface;
+
+import java.io.IOException;
 
 
 /**
@@ -26,7 +28,7 @@ public class Main {
       final Main main = new Main();
       try {
          conf = new ConfigurationLoader().initializeConfiguration();
-//         final WebInterface webInterface = new WebInterface().initialize(conf.getProperties(), conf.getOptionalParameters());
+         //final WebInterface webInterface = new WebInterface().initialize(conf.getProperties(), conf.getOptionalParameters());
 //         Timer timer = new Timer();
 //         timer.scheduleAtFixedRate(new TimerTask() {
 //            @Override
@@ -34,15 +36,19 @@ public class Main {
 //               main.printTweetCount(webInterface);
 //            }
 //         }, 5000, 10000);
-//         webInterface.connect();
-         FileReader fileReader = new FileReader(conf.getProperties());
-         fileReader.run();
+         //webInterface.connect();
+//         FileReader fileReader = new FileReader(conf.getProperties());
+//         fileReader.run();
+         GetUserTimelineGetter getUserTimelineGetter = new GetUserTimelineGetter()
+            .initialize(conf.getProperties(), conf.getOptionalParameters());
+         getUserTimelineGetter.connect();
 
 
       } catch(InitializationException e) {
          e.printStackTrace();
+      } catch(IOException e) {
+         e.printStackTrace();
       }
-
 
 
    }
