@@ -142,19 +142,24 @@ public class DataFileOperations {
 
    }
 
-   public static void createUserIdFile(Map<User, List<TwitterStreamBean>> infoMap, File outFile) throws IOException{
-      if(!outFile.createNewFile()){
-         logger.error("Cannot create user_ids file.");
-         return;
-      }
+   public static void createUserIdFile(Set<Integer> userIdSet, File outFile) throws IOException{
+//      if(!outFile.createNewFile()){
+//         logger.error("Cannot create user_ids file.");
+//         return;
+//      }
 
       FileOutputStream outputStream = new FileOutputStream(outFile);
-      for(User user : infoMap.keySet()){
-         String line = user.getId() + "\n";
+      for(Integer userId : userIdSet){
+         String line = userId + "\n";
+         System.out.println(userIdSet.size());
          outputStream.write(line.getBytes());
       }
       outputStream.close();
    }
+
+    public static void createUserIdFile(){
+
+    }
 
    public static void main(String[] args) throws ParseException {
       StringBuilder builder = new StringBuilder("1234567");

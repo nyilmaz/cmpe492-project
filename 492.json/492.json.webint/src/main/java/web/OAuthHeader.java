@@ -32,14 +32,16 @@ public class OAuthHeader {
    private final Properties optionalParameters;
    private SortedMap<String, String> parameterMap;
    private static final String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-   private static long timestamp = System.currentTimeMillis()/1000;
-   private static String nonce = createNonce();
+   private long timestamp; // = System.currentTimeMillis()/1000;
+   private String nonce; // = createNonce();
 
    OAuthHeader(Properties properties, Properties optionalParameters){
 
       this.properties = properties;
       this.optionalParameters = optionalParameters;
       parameterMap = new TreeMap<String, String>();
+      timestamp = System.currentTimeMillis()/1000;
+      nonce = createNonce();
    }
 
    private static String createNonce(){
@@ -71,7 +73,7 @@ public class OAuthHeader {
       for(Object key_ : optionalParameters.keySet()){
          String keyStr = (String) key_;
          String key = OAuth.percentEncode(keyStr);
-         String value = OAuth.percentEncode((String)optionalParameters.get(keyStr));
+         String value = OAuth.percentEncode(optionalParameters.get(keyStr).toString());
          parameterMap.put(key, value);
       }
 

@@ -34,6 +34,7 @@ public class PostStreamGetter extends WebInterface{
 
    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("dd.MM.yyyy_hh.mm");
 
+   public PostStreamGetter(){}
 
    private PostStreamGetter(Properties properties, Properties optionalParameters) {
       super(properties, optionalParameters);
