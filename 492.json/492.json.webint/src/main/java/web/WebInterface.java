@@ -1,6 +1,6 @@
 package web;
 
-import beans.twitter.TwitterStreamBean;
+import beans.twitter.TwitterBean;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import constants.ProgramConstants;
@@ -38,7 +38,7 @@ public abstract class WebInterface implements Runnable, Initializable{
    protected Properties properties;
    protected Properties optionalParameters;
    private BufferedReader bufferedReader;
-   private volatile List<TwitterStreamBean> twitterStreamBeans;
+   private volatile List<TwitterBean> twitterBeans;
    protected boolean disconnectFlag = false;
    protected volatile BigInteger tweetCount = BigInteger.ZERO;
 
@@ -92,7 +92,7 @@ public abstract class WebInterface implements Runnable, Initializable{
          System.exit(-1);
       }
 
-      twitterStreamBeans = Collections.synchronizedList(new ArrayList<TwitterStreamBean>());
+      twitterBeans = Collections.synchronizedList(new ArrayList<TwitterBean>());
       SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy_hh.mm");
       File f = new File("/home/px5x2/Documents/deneme");
 //      File f = new File(properties.getProperty("data_file") + sdf.format(new Date()));
@@ -120,7 +120,7 @@ public abstract class WebInterface implements Runnable, Initializable{
 
          }
          ////
-         for(TwitterStreamBean tsb : twitterStreamBeans){
+         for(TwitterBean tsb : twitterBeans){
             System.out.println(tsb);
          }
          EntityUtils.consume(httpEntity);
@@ -185,7 +185,7 @@ public abstract class WebInterface implements Runnable, Initializable{
 //            break;
 //         try{
 //
-//            TwitterStreamBean bean = gson.fromJson(line, TwitterStreamBean.class);
+//            TwitterBean bean = gson.fromJson(line, TwitterBean.class);
 //            if(bean.getCoordinates() != null){
 //               fos.write(bean.getCoordinates().getCoordinates2().concat(bean.getText()+"\n").getBytes());
 //               ctr++;

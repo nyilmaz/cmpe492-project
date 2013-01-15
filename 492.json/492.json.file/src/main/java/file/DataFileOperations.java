@@ -1,6 +1,6 @@
 package file;
 
-import beans.twitter.TwitterStreamBean;
+import beans.twitter.TwitterBean;
 import beans.twitter.User;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -28,17 +28,17 @@ public class DataFileOperations {
    private static final String TWITTER_TIMESTAMP_FORMAT = "EEE MMM dd HH:mm:ss '+0000' yyyy";
 
 
-   public static List<TwitterStreamBean> countValidTweets(File file, boolean getLocationedTweets) throws IOException {
+   public static List<TwitterBean> countValidTweets(File file, boolean getLocationedTweets) throws IOException {
 
       BufferedReader bReader = new BufferedReader(new java.io.FileReader(file));
       String line;
       Gson gson = new Gson();
-      TwitterStreamBean bean;
-      List<TwitterStreamBean> beans = new ArrayList<TwitterStreamBean>();
+      TwitterBean bean;
+      List<TwitterBean> beans = new ArrayList<TwitterBean>();
       while((line = bReader.readLine()) != null){
          try{
 
-            bean = gson.fromJson(line, TwitterStreamBean.class);
+            bean = gson.fromJson(line, TwitterBean.class);
 
          }catch(JsonSyntaxException ex){
             continue;
@@ -53,7 +53,7 @@ public class DataFileOperations {
       return beans;
    }
 
-   public static void createOSMXML(Map<User, List<TwitterStreamBean>> infoMap, File outfile) throws IOException {
+   public static void createOSMXML(Map<User, List<TwitterBean>> infoMap, File outfile) throws IOException {
 
       if(!outfile.createNewFile()){
          logger.error("Cannot create xml output file. Create osm xml failed.");
@@ -61,9 +61,9 @@ public class DataFileOperations {
       }
       FileOutputStream outputStream = new FileOutputStream(outfile);
       outputStream.write(getOSMXMLHeader().getBytes());
-      Collection<List<TwitterStreamBean>> allTweets = infoMap.values();
-      for(List<TwitterStreamBean> nodeList : allTweets){
-         for(TwitterStreamBean bean : nodeList){
+      Collection<List<TwitterBean>> allTweets = infoMap.values();
+      for(List<TwitterBean> nodeList : allTweets){
+         for(TwitterBean bean : nodeList){
             outputStream.write(createNode(bean).getBytes());
          }
          outputStream.flush();
@@ -86,7 +86,7 @@ public class DataFileOperations {
          "<osm version=\"0.6\" generator=\"CGImap 0.0.2\">\n";
    }
 
-   private static String createNode(TwitterStreamBean tweet){
+   private static String createNode(TwitterBean tweet){
       try {
          Date date = new SimpleDateFormat(TWITTER_TIMESTAMP_FORMAT).parse(tweet.getCreated_at());
          String formattedDate = new SimpleDateFormat(OSM_TIMESTAMP_FORMAT).format(date);
@@ -102,20 +102,20 @@ public class DataFileOperations {
 
    }
 
-   private static String createWay(User user, List<TwitterStreamBean> tweets){
+   private static String createWay(User user, List<TwitterBean> tweets){
       StringBuilder builder = new StringBuilder("<way id=\"" + user.getId() + "\" " +
          "name=\"" + user.getName() + "\" " +
          "visible=\"true\" " +
          ">\n");
 
-      for(TwitterStreamBean tweet : tweets){
+      for(TwitterBean tweet : tweets){
          builder.append("<nd ref=\"").append(tweet.getId_str()).append("\"/>\n");
       }
       builder.append("</way>");
       return builder.toString();
    }
 
-   public static void createCSV(Map<User, List<TwitterStreamBean>> infoMap, File outfile) throws IOException {
+   public static void createCSV(Map<User, List<TwitterBean>> infoMap, File outfile) throws IOException {
       if(!outfile.createNewFile()){
          logger.error("Cannot create csv output file. Create csv failed.");
          return;
@@ -125,7 +125,7 @@ public class DataFileOperations {
       for(User user : infoMap.keySet()){
          StringBuilder builder = new StringBuilder();
          builder.append(user.getId()).append(",\"").append(user.getName()).append("\",");
-         for(TwitterStreamBean bean : infoMap.get(user)){
+         for(TwitterBean bean : infoMap.get(user)){
 
             builder.append(bean.getCoordinates().getCoordinates()[0])
                .append(",")

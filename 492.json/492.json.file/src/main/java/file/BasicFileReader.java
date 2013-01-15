@@ -1,6 +1,6 @@
 package file;
 
-import beans.twitter.TwitterStreamBean;
+import beans.twitter.TwitterBean;
 import com.google.gson.Gson;
 
 import java.io.*;
@@ -41,7 +41,7 @@ public class BasicFileReader {
       Gson gson = new Gson();
       Set<Integer> userIdSet = new HashSet<Integer>();
       while((line = reader.readLine()) != null){
-         TwitterStreamBean bean = gson.fromJson(line, TwitterStreamBean.class);
+         TwitterBean bean = gson.fromJson(line, TwitterBean.class);
          userIdSet.add(bean.getUser().getId());
       }
       return userIdSet;

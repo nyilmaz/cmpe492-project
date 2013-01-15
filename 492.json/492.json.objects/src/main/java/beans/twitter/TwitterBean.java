@@ -1,11 +1,15 @@
 package beans.twitter;
 
+import util.ProjectUtil;
+
+import java.text.ParseException;
+
 /**
  * User: nyilmaz
  * Date: 10/11/12
  * Time: 1:56 AM
  */
-public class TwitterStreamBean {
+public class TwitterBean implements Comparable{
 
    private String id_str;
 
@@ -46,7 +50,7 @@ public class TwitterStreamBean {
    @Override
    public String toString(){
       StringBuilder sb = new StringBuilder();
-      sb.append("-------------TwitterStreamBean--------------\n");
+      sb.append("-------------TwitterBean--------------\n");
       sb.append("id : ").append("\t").append(id_str).append("\n");
       sb.append("coordinates : ").append("\t").append(coordinates).append("\n");
       sb.append("text : ").append("\t").append(text).append("\n");
@@ -70,4 +74,21 @@ public class TwitterStreamBean {
    public void setId_str(String id_str) {
       this.id_str = id_str;
    }
+
+    @Override
+    public int compareTo(Object o) {
+        if(((TwitterBean)o).getCoordinates() == null)
+            return -1;
+
+        try {
+            return ProjectUtil.TWITTER_DATE_FORMAT.get().parse(this.getCreated_at())
+                    .before(ProjectUtil.TWITTER_DATE_FORMAT.get().parse(((TwitterBean) o).getCreated_at()))
+                    ? -1 : 1;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+
 }

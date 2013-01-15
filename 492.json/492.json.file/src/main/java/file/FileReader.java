@@ -1,11 +1,10 @@
 package file;
 
-import beans.twitter.TwitterStreamBean;
+import beans.twitter.TwitterBean;
 import beans.twitter.User;
 import com.google.common.base.Function;
 import com.google.common.collect.FluentIterable;
 import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +51,14 @@ public class FileReader implements Runnable {
 
       int totalTweetCount = 0;
       long totalLength = 0l;
-      List<TwitterStreamBean> beans = new ArrayList<TwitterStreamBean>();
-      Map<User, List<TwitterStreamBean>> map = new HashMap<User, List<TwitterStreamBean>>();
+      List<TwitterBean> beans = new ArrayList<TwitterBean>();
+      Map<User, List<TwitterBean>> map = new HashMap<User, List<TwitterBean>>();
 
       for(String fileName : fileNames){
          File file = new File(dataDirectory + fileName);
          totalLength += file.length();
          try {
-            List<TwitterStreamBean> streamBeans = DataFileOperations.countValidTweets(file, true);
+            List<TwitterBean> streamBeans = DataFileOperations.countValidTweets(file, true);
             beans.addAll(streamBeans);
             totalTweetCount += streamBeans.size();
          } catch(IOException e) {
@@ -67,10 +66,10 @@ public class FileReader implements Runnable {
          }
       }
       System.out.println(beans.size());
-      for(TwitterStreamBean bean : beans){
+      for(TwitterBean bean : beans){
          User user = bean.getUser();
          if(!map.containsKey(user)){
-            List<TwitterStreamBean> list = new ArrayList<TwitterStreamBean>();
+            List<TwitterBean> list = new ArrayList<TwitterBean>();
             list.add(bean);
             map.put(user, list);
          }else{
@@ -98,39 +97,10 @@ public class FileReader implements Runnable {
 
    }
 
-    private static ThreadLocal<DateFormat> df = new ThreadLocal<DateFormat>(){
-        @Override
-        protected DateFormat initialValue() {
-            return new SimpleDateFormat("EEE MMM dd HH:mm:ss Z yyyy");
-        }
 
-        @Override
-        public DateFormat get() {
-            return super.get();
-        }
-
-        @Override
-        public void set(DateFormat value) {
-            super.set(value);
-        }
-
-        @Override
-        public void remove() {
-            super.remove();
-        }
-    };
    public static void main(String[] args) throws IOException, ParseException {
 
-       long[] countBesiktas = new long[12];
-       long[] countTaksim = new long[12];
-       long[] countKadikoy = new long[12];
-       long count = 0l;
-       long userCount = 0l;
-       long error = 0l;
-       long withCoordinates = 0l;
-       Date mindate = new Date();
-       Date maxdate = new Date(0l);
-       String dir = "/media/SAMSUNG/data/yilbasi/";
+       String dir = "C:\\Users\\px5x2\\data\\yilbasi\\";
 
        String[] fileNames = new File(dir).list(new FilenameFilter() {
            @Override
@@ -142,77 +112,29 @@ public class FileReader implements Runnable {
 
        for(String fileName : fileNames){
 
+           long start = System.currentTimeMillis();
+           BufferedReader br = new BufferedReader(new java.io.FileReader(dir + fileName));
+           String line;
 
-       BufferedReader br = new BufferedReader(new java.io.FileReader(dir + fileName));
-       String line;
+           Gson gson = new Gson();
+           while((line = br.readLine()) != null){
 
+               Type collectionType = new TypeToken<List<TwitterBean>>(){}.getType();
+               List<TwitterBean> userTweets;
+               userTweets = gson.fromJson(line, collectionType);
 
+               for(TwitterBean bean : userTweets){
+                   if(bean.getCoordinates() == null){
+                       continue;
+                   }
 
-
-       Gson gson = new Gson();
-       List<TwitterStreamBean> list = new ArrayList<TwitterStreamBean>();
-       while((line = br.readLine()) != null){
-
-           Type collectionType = new TypeToken<List<TwitterStreamBean>>(){}.getType();
-           List<TwitterStreamBean> tweets;
-           try{
-
-               tweets = gson.fromJson(line, collectionType);
-           }catch (JsonSyntaxException ex){
-               logger.info("Unparsable line :" + line);
-               error++;
-               continue;
-           }
-           count++;
-           userCount++;
-           for(TwitterStreamBean bean : tweets){
-               count++;
-               Date tweetDate = df.get().parse(bean.getCreated_at());
-               if(bean.getCoordinates() == null){
-                   continue;
                }
-               withCoordinates++;
-//               if(tweetDate.after(maxdate)){
-//                   maxdate = tweetDate;
-//               }
-//               if(tweetDate.before(mindate)){
-//                   mindate = tweetDate;
-//               }
-               list.add(bean);
+
            }
+
+           logger.info("File read for \"" + fileName + "\" has last for [" + (System.currentTimeMillis()-start)/1000 + "] seconds.");
        }
-       FileOutputStream fileOutputStream = new FileOutputStream("/media/SAMSUNG/data/yilbasi/yilbasi_coordinates_200_per_user", true);
-       for(TwitterStreamBean bean : list){
 
-//           Calendar cal = Calendar.getInstance();
-//           cal.setTime(df.get().parse(bean.getCreated_at()));
-//           int month = cal.get(Calendar.MONTH);
-           double lat = bean.getCoordinates().getCoordinates()[1];
-           double lng = bean.getCoordinates().getCoordinates()[0];
-
-           fileOutputStream.write(("\""+ bean.getId_str() + "\"," + lat + "," + lng + "\n").getBytes());
-
-//           if(checkInBounds(41.0423,29.00656, lat, lng) < 500){
-//               countBesiktas[month]++;
-//           }else if(checkInBounds(41.037736,28.984759, lat, lng) < 500){
-//               countTaksim[month]++;
-//           }else if(checkInBounds(40.991496,29.022088, lat, lng) < 500){
-//               countKadikoy[month]++;
-//           }
-
-       }
-       fileOutputStream.close();
-       }
-       System.out.println("Mindate: " + mindate);
-       System.out.println("Maxdate: " + maxdate);
-       System.out.println("Count: " + count);
-       System.out.println("User Count: " + userCount);
-       System.out.println("Errors: " + error);
-       System.out.println("With coordinates: " + withCoordinates);
-       System.out.println();
-       System.out.println("Besiktas : " + Arrays.toString(countBesiktas));
-       System.out.println("Taksim : " + Arrays.toString(countTaksim));
-       System.out.println("Kadikoy : " + Arrays.toString(countKadikoy));
    }
 
    /*
